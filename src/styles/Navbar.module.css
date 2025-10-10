@@ -2,30 +2,111 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: black;
   padding: 1rem 2rem;
+  background-color: #2c3e50;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.logo {
-  color: #00bcd4;
-  font-size: 1.4rem;
+.logo a {
+  font-size: 1.5rem;
   font-weight: bold;
+  text-decoration: none;
+  color: white;
 }
 
-.nav ul {
+.navLinks {
   display: flex;
-  gap: 1.5rem;
   list-style: none;
+  gap: 1.5rem;
+  align-items: center;
   margin: 0;
   padding: 0;
 }
 
-.nav a {
-  color: white;
+.navLinks li {
+  margin: 0;
+}
+
+.navLinks a {
   text-decoration: none;
+  color: white;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.navLinks a:hover {
+  opacity: 1;
+}
+
+.createButton {
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.createButton:hover {
+  background-color: #2980b9;
+}
+
+.loginButton {
+  background-color: #27ae60;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.loginButton:hover {
+  background-color: #219a52;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.adminBadge {
+  background-color: #f39c12;
+  color: #2c3e50;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
   font-weight: bold;
 }
 
-.nav a:hover {
-  color: #00bcd4;
+.logoutButton {
+  background-color: transparent;
+  border: 1px solid #2980b9;
+  color: #2980b9;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
+
+.logoutButton:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .navLinks {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
