@@ -2,14 +2,19 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "../../../context/authContext"
 
 export default function PostClient({ post }) {
   const router = useRouter()
+  const { user } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [editTitle, setEditTitle] = useState(post.title)
   const [editContent, setEditContent] = useState(post.content)
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+
+  // Check if current user can edit/delete this post
+  const canEdit = user && (user.role === 'admin' || user.id === post.user_id)
 
   const handleUpdate = async (e) => {
     e.preventDefault()
@@ -76,8 +81,8 @@ export default function PostClient({ post }) {
         </a>
       </div>
 
-      {/* Action Buttons */}
-      {!isEditing && (
+      {/* Action Buttons - Only show for authorized users */}
+      {!isEditing && canEdit && (
         <div style={styles.actionBar}>
           <button 
             onClick={() => setIsEditing(true)}
@@ -160,13 +165,20 @@ export default function PostClient({ post }) {
           </div>
           
           <div style={styles.postMeta}>
-            <span style={styles.postDate}>
-              Published: {new Date(post.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </span>
+            <div style={styles.postInfo}>
+              <span style={styles.postDate}>
+                Published: {new Date(post.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
+              {post.author_name && (
+                <span style={styles.postAuthor}>
+                  By: {post.author_name}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -308,9 +320,19 @@ const styles = {
     borderTop: '1px solid #e0e0e0',
     paddingTop: '15px',
   },
+  postInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+  },
   postDate: {
     color: '#666',
     fontSize: '14px',
+  },
+  postAuthor: {
+    color: '#888',
+    fontSize: '13px',
+    fontStyle: 'italic',
   },
   message: {
     padding: '12px',

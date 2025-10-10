@@ -1,25 +1,46 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "../../context/authContext"
 
 export default function NewPost() {
   const router = useRouter()
+  const { user, loading } = useAuth()
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+
+  // Redirect to login if user is not authenticated (but not while loading)
+  useEffect(() => {
+    if (!loading && user === null) { // null means not logged in, but only redirect after loading is complete
+      router.push('/login')
+    }
+  }, [user, loading, router])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setMessage("")
 
+    // Check if user is logged in
+    if (!user) {
+      setMessage("You must be logged in to create a post.")
+      setIsLoading(false)
+      return
+    }
+
     try {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ 
+          title, 
+          content,
+          author_name: user.name,
+          user_id: user.id
+        }),
       })
 
       if (res.ok) {
@@ -39,6 +60,24 @@ export default function NewPost() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Show loading while checking authentication
+  if (loading) {
+    return (
+      <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "0 1rem", textAlign: "center" }}>
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  // If user is null (not logged in), the useEffect will redirect to login
+  if (!loading && user === null) {
+    return (
+      <div style={{ maxWidth: "800px", margin: "2rem auto", padding: "0 1rem", textAlign: "center" }}>
+        <p>Redirecting to login...</p>
+      </div>
+    )
   }
 
   return (

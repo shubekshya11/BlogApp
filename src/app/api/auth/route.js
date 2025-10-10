@@ -1,5 +1,5 @@
-import pool from "@/lib/db"
-import { hashPassword, verifyPassword } from "@/lib/auth"
+import pool from "../../../lib/db"
+import { hashPassword, verifyPassword } from "../../../lib/auth"
 
 export async function POST(request) {
   try {

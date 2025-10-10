@@ -1,4 +1,4 @@
-import pool from "@/lib/db"
+import pool from "../../../../lib/db"
 
 // PUT /api/posts/[id] → update a post
 export async function PUT(request, { params }) {
