@@ -10,14 +10,12 @@ export default function PostsClient({ initialPosts }) {
   const [posts, setPosts] = useState(initialPosts)
 
   const handleCreatePostClick = (e) => {
-    // Only redirect to login if user is explicitly null (not logged in) and not loading
+    // Only redirect to login if user is not logged in 
     if (!loading && user === null) {
       e.preventDefault()
       router.push('/login')
       return
     }
-    // If user is logged in or still loading, let the default link behavior work
-    // No preventDefault() needed - let the link navigate normally
   }
 
   return (

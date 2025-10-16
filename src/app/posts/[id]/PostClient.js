@@ -13,8 +13,15 @@ export default function PostClient({ post }) {
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  // Check if current user can edit/delete this post
-  const canEdit = user && (user.role === 'admin' || user.id === post.user_id)
+  // Check if user can edit/delete this post
+  const canEdit = user && (user.role === "admin" || user.id === post.user_id)
+
+  // Debug info
+  console.log("Frontend Debug:", {
+    user: user,
+    postUserId: post.user_id,
+    canEdit: canEdit
+  })
 
   const handleUpdate = async (e) => {
     e.preventDefault()
@@ -24,7 +31,12 @@ export default function PostClient({ post }) {
     try {
       const res = await fetch(`/api/posts/${post.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          // Send user info in headers for authentication
+          "x-user-id": user.id.toString(),
+          "x-user-role": user.role
+        },
         body: JSON.stringify({ 
           title: editTitle, 
           content: editContent 
@@ -34,13 +46,14 @@ export default function PostClient({ post }) {
       if (res.ok) {
         setMessage("Post updated successfully!")
         setIsEditing(false)
-        router.refresh() 
+        router.refresh() // Refresh the page to show updated data
       } else {
         const error = await res.json()
         setMessage(`Error: ${error.error}`)
       }
     } catch (error) {
-      setMessage("Failed to update post. Please try again.")
+      setMessage("⚠️ Failed to update post. Please try again.")
+      console.error("Update error:", error)
     } finally {
       setIsLoading(false)
     }
@@ -53,6 +66,11 @@ export default function PostClient({ post }) {
     try {
       const res = await fetch(`/api/posts/${post.id}`, {
         method: "DELETE",
+        headers: { 
+          // Send user info in headers for authentication
+          "x-user-id": user.id.toString(),
+          "x-user-role": user.role
+        },
       })
 
       if (res.ok) {
@@ -63,7 +81,8 @@ export default function PostClient({ post }) {
         setMessage(`Error: ${error.error}`)
       }
     } catch (error) {
-      setMessage("Failed to delete post. Please try again.")
+      setMessage("⚠️ Failed to delete post. Please try again.")
+      console.error("Delete error:", error)
     } finally {
       setIsLoading(false)
     }
@@ -81,7 +100,7 @@ export default function PostClient({ post }) {
         </a>
       </div>
 
-      {/* Action Buttons - Only show for authorized users */}
+      {/* ✅ Action Buttons - Only show if user can edit */}
       {!isEditing && canEdit && (
         <div style={styles.actionBar}>
           <button 
@@ -105,7 +124,7 @@ export default function PostClient({ post }) {
       {message && (
         <div style={{
           ...styles.message,
-          ...(message.includes("Error") ? styles.errorMessage : styles.successMessage)
+          ...(message.includes("❌") ? styles.errorMessage : styles.successMessage)
         }}>
           {message}
         </div>
@@ -122,6 +141,7 @@ export default function PostClient({ post }) {
                 onChange={(e) => setEditTitle(e.target.value)}
                 style={styles.titleInput}
                 disabled={isLoading}
+                required
               />
             </div>
 
@@ -133,6 +153,7 @@ export default function PostClient({ post }) {
                 style={styles.contentInput}
                 disabled={isLoading}
                 rows="12"
+                required
               />
             </div>
 
@@ -159,9 +180,7 @@ export default function PostClient({ post }) {
         /* Post Display */
         <div style={styles.postContainer}>
           <div style={styles.postContent}>
-            <p style={styles.postText}>
-              {post.content}
-            </p>
+            <p style={styles.postText}>{post.content}</p>
           </div>
           
           <div style={styles.postMeta}>

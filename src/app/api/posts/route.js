@@ -1,4 +1,5 @@
 import pool from "../../../lib/db"
+import knex from "../../../lib/db"
 
 // GET /api/posts ( fetch all posts)
 export async function GET() {
@@ -10,6 +11,18 @@ export async function GET() {
     return Response.json({ error: "Failed to fetch posts" }, { status: 500 })
   }
 }
+
+// // GET using knex
+// export async function GET() {
+//   try {
+//     const posts = await knex("posts").select("*").orderBy("id", "desc");
+//     return Response.json(posts);
+//   } catch (error) {
+//     console.error(error)
+//     return Response.json({ error: "Failed to fetch posts" }, { status: 500 })
+//   }
+// }
+
 
 // POST /api/posts (create new post)
 export async function POST(req) {
